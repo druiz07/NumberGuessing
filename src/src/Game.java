@@ -4,13 +4,23 @@ import java.util.Random;
 
 public class Game {
     private int randomNumber;
+    private GameTimer timer;
     private List<String>attemps;
     private  int maxRange = 0;
     public Game()
     {
        this.randomNumber=0;
        this.attemps= new ArrayList<>();
+       this.timer= new GameTimer();
 
+    }
+    public GameTimer getTimer()
+    {
+        return this.timer;
+    }
+    public int getRandomNumber()
+    {
+        return this.randomNumber;
     }
     public void start(int difficulty) {
 
@@ -18,12 +28,15 @@ public class Game {
         switch (difficulty) {
             case 1:
                 maxRange = 10;
+                timer.startTimer(30);
                 break;
             case 2:
                 maxRange = 50;
+                timer.startTimer(45);
                 break;
             case 3:
                 maxRange = 100;
+                timer.startTimer(60);
                 break;
             default:
                 System.out.println("Opción inválida. Usando rango fácil.");
@@ -84,65 +97,70 @@ public class Game {
     public boolean isCloseToMultipleOf10(int number) {
         return Math.abs(number % 10) <= 3;
     }
+    public String getTimeRemaining() {
+        if (timer.isTimeUp()) {
+            return "El tiempo se agotó.";
+        }
+        return "Tiempo restante: " + timer.getTimeLeft() + " segundos";
+    }
 
     public String makeGuess(int guess) {
-        String result = "";
+        StringBuilder result = new StringBuilder();
 
-
-        if (guess < this.randomNumber) {
-            result = "El número es mayor. ";
-        } else if (guess > this.randomNumber) {
-            result = "El número es menor. ";
-        } else {
-            result = "¡Felicidades! Has adivinado el número. ";
+        if (timer.isTimeUp()) {
+            return "¡El tiempo se agotó! El número era " + this.randomNumber;
         }
 
+        if (guess < this.randomNumber) {
+            result.append("El número es mayor. ");
+        } else if (guess > this.randomNumber) {
+            result.append("El número es menor. ");
+        } else {
+            result.append("¡Felicidades! Has adivinado el número. ");
+        }
 
         if (guess != this.randomNumber) {
             if (guess > this.randomNumber) {
-                result += " ¡Te has pasado! ";
+                result.append(" ¡Te has pasado! ");
             } else {
-                result += " ¡Te has quedado corto! ";
+                result.append(" ¡Te has quedado corto! ");
             }
-
 
             if (isEven(this.randomNumber)) {
-                result += " El número es par. ";
+                result.append(" El número es par. ");
             } else {
-                result += " El número es impar. ";
+                result.append(" El número es impar. ");
             }
-
 
             if (isPrime(this.randomNumber)) {
-                result += " El número es primo. ";
+                result.append(" El número es primo. ");
             } else {
-                result += " El número no es primo. ";
+                result.append(" El número no es primo. ");
             }
-
 
             if (Math.abs(this.randomNumber - guess) <= 5) {
-                result += " ¡Estás muy cerca! ";
+                result.append(" ¡Estás muy cerca! ");
             }
 
-
             if (isDivisibleBy3(this.randomNumber)) {
-                result += " El número es divisible por 3. ";
+                result.append(" El número es divisible por 3. ");
             }
 
             if (isPerfectSquare(this.randomNumber)) {
-                result += " El número es un cuadrado perfecto. ";
+                result.append(" El número es un cuadrado perfecto. ");
             }
 
-            result += " " + getRange(this.randomNumber);
+            result.append(" ").append(getRange(this.randomNumber));
 
             if (isCloseToMultipleOf10(this.randomNumber)) {
-                result += " El número está cerca de un múltiplo de 10. ";
+                result.append(" El número está cerca de un múltiplo de 10. ");
             }
         }
-        this.attemps.add("Intento: " + guess);
-        return result;
 
+        this.attemps.add("Intento: " + guess);
+        return result.toString(); // Convierte el StringBuilder a un String
     }
+
     public List<String> getAttempts() {
         return this.attemps;
     }
