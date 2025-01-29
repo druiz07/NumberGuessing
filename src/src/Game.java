@@ -4,7 +4,7 @@ import java.util.Random;
 
 public class Game {
     private int randomNumber;
-    private List<Integer>attemps;
+    private List<String>attemps;
     private  int maxRange = 0;
     public Game()
     {
@@ -16,13 +16,13 @@ public class Game {
 
 
         switch (difficulty) {
-            case 1: // Fácil: 1-10
+            case 1:
                 maxRange = 10;
                 break;
-            case 2: // Medio: 1-50
+            case 2:
                 maxRange = 50;
                 break;
-            case 3: // Difícil: 1-100
+            case 3:
                 maxRange = 100;
                 break;
             default:
@@ -36,22 +36,114 @@ public class Game {
 
     private void generateRandomNumber() {
         Random rand = new Random();
-        this.randomNumber = rand.nextInt(maxRange) + 1; // Número entre 1 y 100
+        this.randomNumber = rand.nextInt(maxRange) + 1;
     }
-    public String makeGuess(int guess) {
-        // Registrar intento
-        this.attemps.add(guess);
 
-        // Verificar el intento
-        if (guess == this.randomNumber) {
-            return "¡Felicidades! Adivinaste el número en " + this.attemps.size() + " intentos.";
-        } else if (guess < this.randomNumber) {
-            return "El número es más grande. Intenta nuevamente.";
+    public boolean isDivisibleBy3(int number) {
+        return number % 3 == 0;
+    }
+
+
+    public boolean isPerfectSquare(int number) {
+        double sqrt = Math.sqrt(number);
+        return sqrt == Math.floor(sqrt);
+    }
+
+
+    public String getRange(int number) {
+        if (number <= 10) {
+            return "El número está entre 1 y 10.";
+        } else if (number <= 20) {
+            return "El número está entre 11 y 20.";
+        } else if (number <= 50) {
+            return "El número está entre 21 y 50.";
+        } else if (number <= 75) {
+            return "El número está entre 51 y 75.";
         } else {
-            return "El número es más pequeño. Intenta nuevamente.";
+            return "El número está entre 76 y 100.";
         }
     }
-    public List<Integer> getAttempts() {
+
+
+    public boolean isPrime(int number) {
+        if (number <= 1) {
+            return false;
+        }
+        for (int i = 2; i <= Math.sqrt(number); i++) {
+            if (number % i == 0) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+
+    public boolean isEven(int number) {
+        return number % 2 == 0;
+    }
+    public boolean isCloseToMultipleOf10(int number) {
+        return Math.abs(number % 10) <= 3;
+    }
+
+    public String makeGuess(int guess) {
+        String result = "";
+
+
+        if (guess < this.randomNumber) {
+            result = "El número es mayor. ";
+        } else if (guess > this.randomNumber) {
+            result = "El número es menor. ";
+        } else {
+            result = "¡Felicidades! Has adivinado el número. ";
+        }
+
+
+        if (guess != this.randomNumber) {
+            if (guess > this.randomNumber) {
+                result += " ¡Te has pasado! ";
+            } else {
+                result += " ¡Te has quedado corto! ";
+            }
+
+
+            if (isEven(this.randomNumber)) {
+                result += " El número es par. ";
+            } else {
+                result += " El número es impar. ";
+            }
+
+
+            if (isPrime(this.randomNumber)) {
+                result += " El número es primo. ";
+            } else {
+                result += " El número no es primo. ";
+            }
+
+
+            if (Math.abs(this.randomNumber - guess) <= 5) {
+                result += " ¡Estás muy cerca! ";
+            }
+
+
+            if (isDivisibleBy3(this.randomNumber)) {
+                result += " El número es divisible por 3. ";
+            }
+
+            if (isPerfectSquare(this.randomNumber)) {
+                result += " El número es un cuadrado perfecto. ";
+            }
+
+            result += " " + getRange(this.randomNumber);
+
+            if (isCloseToMultipleOf10(this.randomNumber)) {
+                result += " El número está cerca de un múltiplo de 10. ";
+            }
+        }
+        this.attemps.add("Intento: " + guess);
+        return result;
+
+    }
+    public List<String> getAttempts() {
         return this.attemps;
     }
 }
